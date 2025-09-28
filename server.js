@@ -1,9 +1,24 @@
 // Load environment variables
 require('dotenv').config();
 
+// Fallback for Phusion Passenger
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
+
+// Debug environment variables
+console.log('🔍 Environment Debug:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('APP_URL:', process.env.APP_URL);
+console.log('Current working directory:', process.cwd());
+console.log('__dirname:', __dirname);
+
 const express = require('express');
 const mysql = require('mysql2/promise');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const path = require('path');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -263,7 +278,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
-app.use(session({
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
@@ -271,7 +286,26 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
-}));
+};
+
+// Use FileStore for production, MemoryStore for development
+if (process.env.NODE_ENV === 'production') {
+  try {
+    const FileStore = require('session-file-store')(session);
+    sessionConfig.store = new FileStore({
+      path: './sessions',
+      ttl: 24 * 60 * 60, // 24 hours
+      retries: 5
+    });
+    console.log('✅ Using FileStore for sessions (production)');
+  } catch (error) {
+    console.log('⚠️  FileStore not available, using MemoryStore (not recommended for production)');
+  }
+} else {
+  console.log('✅ Using MemoryStore for sessions (development)');
+}
+
+app.use(session(sessionConfig));
 
 // Database connection
 let db = null;

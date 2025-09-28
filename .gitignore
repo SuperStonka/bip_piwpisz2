@@ -119,3 +119,6 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+
+# Session files
+sessions/
