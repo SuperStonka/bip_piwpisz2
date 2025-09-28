@@ -1,4 +1,4 @@
-# Phusion Passenger Configuration for Node.js
+
 # Enable friendly error pages for debugging
 PassengerFriendlyErrorPages on
 

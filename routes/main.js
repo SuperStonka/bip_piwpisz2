@@ -787,7 +787,7 @@ router.get('/sitemap.xml', async (req, res) => {
     }
     
     res.set('Content-Type', 'application/xml');
-    res.render('sitemap', { pages, news: articles }); // Keep 'news' name for template compatibility
+    res.render('sitemap', { pages, news: articles, appUrl: res.locals.appUrl }); // Keep 'news' name for template compatibility
   } catch (error) {
     console.error('Error generating sitemap:', error);
     res.status(500).send('Error generating sitemap');
