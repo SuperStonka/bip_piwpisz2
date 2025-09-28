@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+        
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-title {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #2b7cb3;
+            outline: 2px solid #2b7cb3;
+            outline-offset: 2px;
+        }
+        
+        .form-input.error {
+            border-color: #e74c3c;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #2b7cb3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .login-button:hover,
+        .login-button:focus {
+            background-color: #004499;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .back-link a {
+            color: #2b7cb3;
+            text-decoration: none;
+        }
+        
+        .back-link a:hover,
+        .back-link a:focus {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <header class="login-header">
+                <h1 class="login-title">Panel administracyjny</h1>
+                <p class="login-subtitle">Powiatowy Inspektorat Weterynarii w Piszu</p>
+            </header>
+            
+            <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error" role="alert">
+                <%= error %>
+            </div>
+            <% } %>
+            
+            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-error" role="alert">
+                <ul style="margin: 0; padding-left: 1rem;">
+                    <% errors.forEach(function(error) { %>
+                    <li><%= error.msg %></li>
+                    <% }); %>
+                </ul>
+            </div>
+            <% } %>
+            
+            <form method="POST" action="/admin/login" novalidate>
+                <div class="form-group">
+                    <label for="username" class="form-label">Nazwa użytkownika</label>
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           class="form-input" 
+                           value="<%= typeof username !== 'undefined' ? username : '' %>"
+                           required 
+                           autocomplete="username"
+                           aria-describedby="username-error">
+                    <div id="username-error" class="error-message" style="display: none;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Hasło</label>
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           class="form-input" 
+                           required 
+                           autocomplete="current-password"
+                           aria-describedby="password-error">
+                    <div id="password-error" class="error-message" style="display: none;"></div>
+                </div>
+                
+                <button type="submit" class="login-button">Zaloguj się</button>
+            </form>
+            
+            <div class="back-link">
+                <a href="/">← Powrót do strony głównej</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const username = document.getElementById('username');
+            const password = document.getElementById('password');
+            let hasErrors = false;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.form-input').forEach(function(el) {
+                el.classList.remove('error');
+            });
+            
+            // Validate username
+            if (!username.value.trim()) {
+                document.getElementById('username-error').textContent = 'Nazwa użytkownika jest wymagana';
+                document.getElementById('username-error').style.display = 'block';
+                username.classList.add('error');
+                hasErrors = true;
+            }
+            
+            // Validate password
+            if (!password.value) {
+                document.getElementById('password-error').textContent = 'Hasło jest wymagane';
+                document.getElementById('password-error').style.display = 'block';
+                password.classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (hasErrors) {
+                e.preventDefault();
+                // Focus first error field
+                const firstError = document.querySelector('.form-input.error');
+                if (firstError) {
+                    firstError.focus();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

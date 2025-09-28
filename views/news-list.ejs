@@ -1,0 +1,114 @@
+
+<div class="news-listing">
+    <header class="page-header">
+        <h1 class="page-title">Aktualności</h1>
+        <% if (currentCategory) { %>
+        <p class="page-description">Kategoria: <%= currentCategory %></p>
+        <% } %>
+    </header>
+    
+    <!-- Category filter -->
+    <div class="news-filters">
+        <h2 class="visually-hidden">Filtry aktualności</h2>
+        <form method="GET" action="/aktualnosci" class="filter-form">
+            <label for="category-filter" class="filter-label">Filtruj według kategorii:</label>
+            <select id="category-filter" name="kategoria" class="filter-select">
+                <option value="">Wszystkie kategorie</option>
+                <option value="Aktualności" <%= currentCategory === 'Aktualności' ? 'selected' : '' %>>Aktualności</option>
+                <option value="HPAI (Grypa ptaków)" <%= currentCategory === 'HPAI (Grypa ptaków)' ? 'selected' : '' %>>HPAI (Grypa ptaków)</option>
+                <option value="ASF (Afrykański pomór świń)" <%= currentCategory === 'ASF (Afrykański pomór świń)' ? 'selected' : '' %>>ASF (Afrykański pomór świń)</option>
+                <option value="FMD (Pryszczyca)" <%= currentCategory === 'FMD (Pryszczyca)' ? 'selected' : '' %>>FMD (Pryszczyca)</option>
+                <option value="BTV (Choroba niebieskiego języka)" <%= currentCategory === 'BTV (Choroba niebieskiego języka)' ? 'selected' : '' %>>BTV (Choroba niebieskiego języka)</option>
+                <option value="ND (Rzekomy pomór drobiu)" <%= currentCategory === 'ND (Rzekomy pomór drobiu)' ? 'selected' : '' %>>ND (Rzekomy pomór drobiu)</option>
+                <option value="Dobrostan zwierząt" <%= currentCategory === 'Dobrostan zwierząt' ? 'selected' : '' %>>Dobrostan zwierząt</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filtruj</button>
+        </form>
+    </div>
+    
+    <!-- News list -->
+    <section class="news-section" aria-labelledby="news-list-heading">
+        <h2 id="news-list-heading" class="visually-hidden">Lista aktualności</h2>
+        
+        <% if (news && news.length > 0) { %>
+        <div class="news-list">
+            <% news.forEach(function(newsItem) { %>
+            <article class="news-item">
+                <div class="news-meta">
+                    <time datetime="<%= new Date(newsItem.publishDate).toISOString() %>" class="news-date">
+                        <%= new Date(newsItem.publishDate).toLocaleDateString('pl-PL') %>
+                    </time>
+                    <span class="news-category"><%= newsItem.category %></span>
+                    <span class="news-views">Wyświetleń: <%= newsItem.views %></span>
+                </div>
+                
+                <h3 class="news-title">
+                    <a href="/aktualnosci/<%= newsItem.slug %>" class="news-link">
+                        <%= newsItem.title %>
+                    </a>
+                </h3>
+                
+                <% if (newsItem.excerpt) { %>
+                <p class="news-excerpt"><%= newsItem.excerpt %></p>
+                <% } %>
+                
+                <div class="news-actions">
+                    <a href="/aktualnosci/<%= newsItem.slug %>" class="read-more" aria-label="Czytaj więcej: <%= newsItem.title %>">
+                        Czytaj więcej →
+                    </a>
+                </div>
+            </article>
+            <% }); %>
+        </div>
+        
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+        <nav class="pagination" aria-label="Nawigacja między stronami">
+            <ul class="pagination-list">
+                <% if (currentPage > 1) { %>
+                <li>
+                    <a href="?page=<%= currentPage - 1 %><%= currentCategory ? '&kategoria=' + encodeURIComponent(currentCategory) : '' %>" 
+                       class="pagination-link" 
+                       aria-label="Poprzednia strona">
+                        ← Poprzednia
+                    </a>
+                </li>
+                <% } %>
+                
+                <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                <li>
+                    <% if (i === currentPage) { %>
+                    <span class="pagination-current" aria-current="page"><%= i %></span>
+                    <% } else { %>
+                    <a href="?page=<%= i %><%= currentCategory ? '&kategoria=' + encodeURIComponent(currentCategory) : '' %>" 
+                       class="pagination-link" 
+                       aria-label="Strona <%= i %>">
+                        <%= i %>
+                    </a>
+                    <% } %>
+                </li>
+                <% } %>
+                
+                <% if (currentPage < totalPages) { %>
+                <li>
+                    <a href="?page=<%= currentPage + 1 %><%= currentCategory ? '&kategoria=' + encodeURIComponent(currentCategory) : '' %>" 
+                       class="pagination-link" 
+                       aria-label="Następna strona">
+                        Następna →
+                    </a>
+                </li>
+                <% } %>
+            </ul>
+        </nav>
+        <% } %>
+        
+        <% } else { %>
+        <div class="no-news">
+            <p>Brak aktualności do wyświetlenia.</p>
+            <% if (currentCategory) { %>
+            <p><a href="/aktualnosci">Zobacz wszystkie aktualności</a></p>
+            <% } %>
+        </div>
+        <% } %>
+    </section>
+</div>

@@ -1,0 +1,81 @@
+
+<article class="news-detail">
+    <header class="news-header">
+        <nav class="news-breadcrumb" aria-label="Ścieżka do aktualności">
+            <a href="/aktualnosci">← Powrót do aktualności</a>
+        </nav>
+        
+        <div class="news-meta">
+            <time datetime="<%= new Date(news.publishDate).toISOString() %>" class="news-date">
+                <%= new Date(news.publishDate).toLocaleDateString('pl-PL') %>
+            </time>
+            <span class="news-category"><%= news.category %></span>
+            <span class="news-views">Wyświetleń: <%= news.views %></span>
+        </div>
+        
+        <h1 class="news-title"><%= news.title %></h1>
+        
+        <% if (news.excerpt) { %>
+        <p class="news-excerpt"><%= news.excerpt %></p>
+        <% } %>
+    </header>
+    
+    <% if (news.featuredImage && news.featuredImage.url) { %>
+    <div class="news-image">
+        <img src="<%= news.featuredImage.url %>" 
+             alt="<%= news.featuredImage.alt || news.title %>" 
+             class="featured-image"
+             loading="lazy">
+    </div>
+    <% } %>
+    
+    <div class="news-content">
+        <%- news.content %>
+    </div>
+    
+    <footer class="news-footer">
+        <div class="news-actions">
+            <a href="/aktualnosci" class="btn btn-primary">Powrót do aktualności</a>
+            <button class="btn btn-secondary print-btn">Drukuj</button>
+            <button class="btn btn-secondary share-btn">Udostępnij</button>
+        </div>
+        
+        <div class="news-meta-footer">
+            <p>
+                <strong>Data publikacji:</strong> 
+                <time datetime="<%= new Date(news.publishDate).toISOString() %>">
+                    <%= new Date(news.publishDate).toLocaleDateString('pl-PL') %>
+                </time>
+            </p>
+            <p><strong>Kategoria:</strong> <%= news.category %></p>
+            <p><strong>Liczba wyświetleń:</strong> <%= news.views %></p>
+        </div>
+    </footer>
+</article>
+
+<script>
+function shareNews() {
+    if (navigator.share) {
+        navigator.share({
+            title: '<%= news.title %>',
+            text: '<%= news.excerpt || "" %>',
+            url: window.location.href
+        }).catch(function(error) {
+            console.log('Error sharing:', error);
+            fallbackShare();
+        });
+    } else {
+        fallbackShare();
+    }
+}
+
+function fallbackShare() {
+    // Copy URL to clipboard
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        alert('Link został skopiowany do schowka');
+    }).catch(function() {
+        // Fallback: show URL in prompt
+        prompt('Skopiuj ten link:', window.location.href);
+    });
+}
+</script>
