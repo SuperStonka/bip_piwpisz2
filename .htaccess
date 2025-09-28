@@ -3,6 +3,12 @@ PassengerAppRoot /websites/bip_piwpisz2
 PassengerAppType node
 PassengerStartupFile server.js
 
+# Redirect all requests to Node.js application
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ / [QSA,L]
+
 # Enable friendly error pages for debugging
 PassengerFriendlyErrorPages on
 PassengerEnvVar NODE_ENV development
