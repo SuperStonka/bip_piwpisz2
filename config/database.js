@@ -1,10 +1,10 @@
 // Database configuration
 module.exports = {
   // MySQL configuration - use environment variables with fallbacks
-  host: process.env.DB_HOST || 'arstudio.atthost24.pl',
-  user: process.env.DB_USER || '9518_piwpisz',
-  password: process.env.DB_PASSWORD || 'Rs75Nz#$UB65@',
-  database: process.env.DB_NAME || '9518_piwpisz',
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || '222055_bippiwpisz2',
+  password: process.env.DB_PASSWORD || 'Zb3*E63@8s*$T',
+  database: process.env.DB_NAME || '22055_bippiwpisz2',
   port: process.env.DB_PORT || 3306,
   
   // Connection options

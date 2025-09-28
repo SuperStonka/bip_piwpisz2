@@ -324,10 +324,11 @@ async function connectToDatabase() {
     
     // Test connection
     const connection = await db.getConnection();
-    console.log('✅ Połączono z bazą danych MySQL (arstudio.atthost24.pl)');
-    console.log('📊 Baza danych: 9518_piwpisz');
-    console.log('🌐 Host: arstudio.atthost24.pl');
-    console.log('🔌 Port: 3306');
+    console.log('✅ Połączono z bazą danych MySQL');
+    console.log('📊 Baza danych:', dbConfig.database);
+    console.log('🌐 Host:', dbConfig.host);
+    console.log('👤 Użytkownik:', dbConfig.user);
+    console.log('🔌 Port:', dbConfig.port);
     connection.release();
   } catch (err) {
     console.error('❌ Błąd połączenia z MySQL:', err.message);
