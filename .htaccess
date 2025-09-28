@@ -1,5 +1,5 @@
 # Phusion Passenger Configuration for Node.js
-PassengerAppRoot /path/to/bip_piwpisz2
+PassengerAppRoot /websites/bip_piwpisz2
 PassengerAppType node
 PassengerStartupFile server.js
 
