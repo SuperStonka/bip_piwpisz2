@@ -39,16 +39,16 @@ Responsywna strona internetowa z panelem CMS, zgodna z wytycznymi WCAG 2.1, stwo
 
 ## Wymagania systemowe
 
-- Node.js 16.x lub nowszy
-- MongoDB 4.x lub nowszy
+- Node.js 18.x lub nowszy
+- MySQL 5.7+ lub MariaDB 10.3+
 - npm lub yarn
 
 ## Instalacja
 
 1. Sklonuj repozytorium:
 ```bash
-git clone <repository-url>
-cd bip_www_cms
+git clone https://github.com/SuperStonka/bip_piwpisz2.git
+cd bip_piwpisz2
 ```
 
 2. Zainstaluj zależności:
@@ -58,27 +58,32 @@ npm install
 
 3. Skonfiguruj zmienne środowiskowe:
 ```bash
-cp .env.example .env
+cp env.example .env
 ```
 
 Edytuj plik `.env` i ustaw:
-```
-NODE_ENV=development
+```env
+# Application Environment
+NODE_ENV=production
 PORT=3000
-MONGODB_URI=mongodb://localhost:27017/weterynaria_pisz
-SESSION_SECRET=your-secret-key-here
+
+# Database Configuration
+DB_HOST=localhost
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_NAME=your_database_name
+DB_PORT=3306
+
+# Application URLs
+APP_URL=https://pisz.piw.gov.pl
+BASE_URL=https://pisz.piw.gov.pl
+
+# Security (IMPORTANT: Change these in production!)
+SESSION_SECRET=your_very_secure_session_secret_here
+JWT_SECRET=your_very_secure_jwt_secret_here
 ```
 
-4. Uruchom MongoDB (jeśli nie jest uruchomiony):
-```bash
-# Windows
-net start MongoDB
-
-# macOS/Linux
-sudo systemctl start mongod
-```
-
-5. Uruchom aplikację:
+4. Uruchom aplikację:
 ```bash
 # Tryb deweloperski
 npm run dev
@@ -87,7 +92,7 @@ npm run dev
 npm start
 ```
 
-6. Otwórz przeglądarkę i przejdź do:
+5. Otwórz przeglądarkę i przejdź do:
 - Strona główna: http://localhost:3000
 - Panel administracyjny: http://localhost:3000/admin
 
@@ -167,22 +172,102 @@ node scripts/create-admin.js
 - `PUT /api/news/:id` - Aktualizuj aktualność
 - `DELETE /api/news/:id` - Usuń aktualność
 
-## Wdrażanie
+## Wdrażanie na serwerze
+
+### 1. Przygotowanie serwera
+```bash
+# Zainstaluj Node.js (zalecana wersja 18+)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Zainstaluj MySQL
+sudo apt-get install mysql-server
+
+# Zainstaluj PM2 dla zarządzania procesami
+sudo npm install -g pm2
+```
+
+### 2. Klonowanie i konfiguracja
+```bash
+# Sklonuj repozytorium
+git clone https://github.com/SuperStonka/bip_piwpisz2.git
+cd bip_piwpisz2
+
+# Zainstaluj zależności
+npm install
+
+# Skonfiguruj zmienne środowiskowe
+cp env.example .env
+nano .env
+```
+
+### 3. Konfiguracja bazy danych
+```bash
+# Utwórz bazę danych
+mysql -u root -p
+CREATE DATABASE bip_piwpisz CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'bip_user'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT ALL PRIVILEGES ON bip_piwpisz.* TO 'bip_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+# Uruchom skrypt inicjalizacyjny
+node scripts/create-admin.js
+```
+
+### 4. Konfiguracja Nginx (opcjonalnie)
+```nginx
+server {
+    listen 80;
+    server_name pisz.piw.gov.pl;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### 5. Uruchomienie aplikacji
+```bash
+# Uruchom z PM2
+pm2 start server.js --name "bip-cms"
+
+# Zapisz konfigurację PM2
+pm2 save
+pm2 startup
+
+# Sprawdź status
+pm2 status
+pm2 logs bip-cms
+```
 
 ### Zmienne środowiskowe produkcyjne
-```bash
+```env
 NODE_ENV=production
 PORT=3000
-MONGODB_URI=mongodb://username:password@host:port/database
-SESSION_SECRET=strong-secret-key
+DB_HOST=localhost
+DB_USER=bip_user
+DB_PASSWORD=secure_password
+DB_NAME=bip_piwpisz
+APP_URL=https://pisz.piw.gov.pl
+SESSION_SECRET=very_secure_session_secret_here
 ```
 
 ### Optymalizacje produkcyjne
-- Kompresja gzip
-- Cache headers
-- Helmet.js dla bezpieczeństwa
-- Optymalizacja obrazów
-- Minifikacja CSS/JS
+- ✅ Kompresja gzip
+- ✅ Cache headers
+- ✅ Helmet.js dla bezpieczeństwa
+- ✅ Trust proxy dla prawidłowego wykrywania IP
+- ✅ Optymalizacja obrazów
+- ✅ Minifikacja CSS/JS
 
 ## Licencja
 

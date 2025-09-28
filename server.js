@@ -1,3 +1,6 @@
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const mysql = require('mysql2/promise');
 const session = require('express-session');
@@ -180,6 +183,7 @@ function generateBreadcrumbs(path, query, menuStructure, articleTitle = null) {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const APP_URL = process.env.APP_URL || process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Trust proxy for correct IP detection (important for view tracking)
 app.set('trust proxy', true);
@@ -197,6 +201,7 @@ app.set('layout extractStyles', true);
 // Make database and site settings available to all views
 app.use(async (req, res, next) => {
   res.locals.db = db; // Używaj globalnej zmiennej db bezpośrednio
+  res.locals.appUrl = APP_URL; // URL aplikacji dla linków absolutnych
   
   // Dodaj ustawienia strony i menu do wszystkich widoków
   if (db) {
