@@ -131,7 +131,7 @@ node scripts/create-admin.js
 │   ├── css/            # Style CSS
 │   ├── js/             # Skrypty JavaScript
 │   └── images/         # Obrazy
-├── server.js           # Główny plik serwera
+├── app.js              # Główny plik serwera
 └── package.json        # Konfiguracja npm
 ```
 
@@ -238,7 +238,7 @@ server {
 ### 5. Uruchomienie aplikacji
 ```bash
 # Uruchom z PM2
-pm2 start server.js --name "bip-cms"
+pm2 start app.js --name "bip-cms"
 
 # Zapisz konfigurację PM2
 pm2 save

@@ -1,29 +1,7 @@
 # Phusion Passenger Configuration for Node.js
-PassengerAppRoot /home/piwpisz/websites/bip_piwpisz2
-PassengerAppType node
-PassengerStartupFile server.js
-
 # Enable friendly error pages for debugging
 PassengerFriendlyErrorPages on
-PassengerEnvVar NODE_ENV development
 
-# Environment Variables
-PassengerEnvVar PORT 3000
-PassengerEnvVar DB_HOST piwpisz.atthost24.pl
-PassengerEnvVar DB_USER 22055_bippiwpisz2
-PassengerEnvVar DB_PASSWORD "Zb3*E63@8s*$T"
-PassengerEnvVar DB_NAME 22055_bippiwpisz2
-PassengerEnvVar DB_PORT 3306
-PassengerEnvVar APP_URL https://pisz.piw.gov.pl
-PassengerEnvVar BASE_URL https://pisz.piw.gov.pl
-PassengerEnvVar SESSION_SECRET "bip_piwpisz_2024_secure_session_key"
-PassengerEnvVar JWT_SECRET "bip_piwpisz_2024_secure_jwt_key"
-
-# Passenger Performance Settings
-PassengerMaxPoolSize 6
-PassengerMinInstances 1
-PassengerMaxInstances 6
-PassengerPoolIdleTime 300
 
 # Redirect all requests to Node.js application
 RewriteEngine On

@@ -2,10 +2,10 @@
   "name": "powiatowy-inspektorat-weterynarii-pisz",
   "version": "1.0.0",
   "description": "Responsive website for Powiatowy Inspektorat Weterynarii w Piszu with CMS panel, WCAG 2.1 compliant",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
